@@ -65,11 +65,6 @@ const handleSubmit = async () => {
 
 <template>
   <div class="animate-fade-in p-4">
-    <h2 class="mb-1 text-xl font-semibold">Create account</h2>
-    <p class="mb-6 text-sm text-gray-500">
-      Join us in just a few seconds
-    </p>
-
     <fwb-alert 
       v-if="message" 
       :type="message.includes('successfully') ? 'success' : 'danger'"

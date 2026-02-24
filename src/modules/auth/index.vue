@@ -34,7 +34,7 @@ const isMobile = computed(() => width.value < 768);
 
         <!-- Top panel: blue info -->
         <div class="relative flex flex-col items-center justify-center text-white px-8 text-center p-8">
-          <div class="absolute inset-0 bg-blue-600 bg-opacity-90"></div>
+          <div class="absolute inset-0 bg-blue-600 bg-opacity-70"></div>
           <div class="relative z-10 w-full">
             <h2 class="mb-3 text-3xl font-bold">
               {{ mode === 'login' ? 'Create New Account' : 'Welcome back!' }}
@@ -52,7 +52,7 @@ const isMobile = computed(() => width.value < 768);
               class="w-full !rounded-xl"
               @click="toggleMode"
             >
-              <strong class="text-blue-900">
+              <strong class="text-white">
                 {{ mode === 'login' ? 'Create an account' : 'Go to login' }}
               </strong>
             </Button>
@@ -81,7 +81,7 @@ const isMobile = computed(() => width.value < 768);
       <div class="flex w-full max-w-5xl h-[600px] shadow-2xl rounded-xl overflow-hidden bg-white mx-[300px]  ">
         
         <div class="relative w-1/2 flex flex-col items-center justify-center text-white px-8 text-center">
-          <div class="absolute inset-0 bg-blue-600 bg-opacity-90"></div>
+          <div class="absolute inset-0 bg-blue-600 bg-opacity-70"></div>
 
           <div class="relative z-10 w-full max-w-sm">
             <h2 class="mb-3 text-3xl font-bold">
@@ -100,7 +100,7 @@ const isMobile = computed(() => width.value < 768);
               class="w-full !rounded-xl"
               @click="toggleMode"
             >
-              <strong class="text-blue-900">
+              <strong class="text-white">
                 {{ mode === 'login' ? 'Create an account' : 'Go to login' }}
               </strong>
             </Button>

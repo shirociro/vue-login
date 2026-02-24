@@ -17,16 +17,18 @@ const form = ref({
   password: "",
 });
 
-const errors = ref<any>({});
+const errors = ref<Record<string, string>>({});
 const loading = ref(false);
+const message = ref<string | null>(null);
 
 const handleSubmit = async () => {
   const result = loginSchema.safeParse(form.value);
 
   if (!result.success) {
-    const fieldErrors: any = {};
+    const fieldErrors: Record<string, string> = {};
     result.error.issues.forEach((err) => {
-      fieldErrors[err.path[0]] = err.message;
+      const field = err.path[0] as string;
+      fieldErrors[field] = err.message;
     });
     errors.value = fieldErrors;
     return;
@@ -34,12 +36,13 @@ const handleSubmit = async () => {
 
   errors.value = {};
   loading.value = true;
+  message.value = null;
 
   try {
     await login(form.value.email, form.value.password);
     router.push("/home");
-  } catch (error) {
-    errors.value.password = "Invalid email or password";
+  } catch (error: any) {
+    message.value = error.message || "Invalid email or password";
   } finally {
     loading.value = false;
   }
@@ -47,51 +50,59 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <div class="w-full max-w-sm">
-    <h2 class="text-3xl font-semibold mb-2 text-gray-800">
-      Welcome back
-    </h2>
+  <div class="animate-fade-in p-4 w-full max-w-sm mx-auto">
+    <fwb-alert 
+      v-if="message" 
+      :type="message.includes('successfully') ? 'success' : 'danger'"
+      class="mb-4"
+    >
+      {{ message }}
+    </fwb-alert>
 
-    <p class="text-sm text-gray-500 mb-8">
-      Sign in to continue to your account
-    </p>
-
-    <form class="flex flex-col gap-6" @submit.prevent="handleSubmit">
+    <form class="flex flex-col gap-4" @submit.prevent="handleSubmit">
       <!-- Email -->
       <div>
-        <input
+        <fwb-label for="email">Email</fwb-label>
+        <fwb-input
+          id="email"
           v-model="form.email"
           type="email"
           placeholder="Enter your email"
-          class="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          size="sm"
+          :validation-status="errors.email ? 'error' : undefined"
           :disabled="loading"
-        />
-        <p v-if="errors.email" class="mt-1 text-sm text-red-500">
-          {{ errors.email }}
-        </p>
+        >
+          <template v-if="errors.email" #validationMessage>
+            {{ errors.email }}
+          </template>
+        </fwb-input>
       </div>
 
       <!-- Password -->
       <div>
-        <input
+        <fwb-label for="password">Password</fwb-label>
+        <fwb-input
+          id="password"
           v-model="form.password"
           type="password"
           placeholder="Enter your password"
-          class="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          size="sm"
+          :validation-status="errors.password ? 'error' : undefined"
           :disabled="loading"
-        />
-        <p v-if="errors.password" class="mt-1 text-sm text-red-500">
-          {{ errors.password }}
-        </p>
+        >
+          <template v-if="errors.password" #validationMessage>
+            {{ errors.password }}
+          </template>
+        </fwb-input>
       </div>
 
-      <button
+      <fwb-button
         type="submit"
-        class="w-full py-3 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition disabled:opacity-50"
+        class="w-full !rounded-xl"
         :disabled="loading"
       >
         {{ loading ? "Signing in..." : "Sign in" }}
-      </button>
+      </fwb-button>
     </form>
   </div>
 </template>
