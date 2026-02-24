@@ -1,0 +1,39 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Node modules
+node_modules/
+*.local
+
+# Editor integration files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# TypeScript / Build
+*.tsbuildinfo
+
+# Environment variables (Crucial for security)
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# Unit testing
+test-results/
+coverage/
+
+# OS generated files
+.DS_Store
+Thumbs.db

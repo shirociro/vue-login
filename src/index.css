@@ -1,0 +1,7 @@
+<style scoped>
+@reference "./style.css";
+
+.custom-class {
+  @apply border rounded p-3;
+}
+</style>
