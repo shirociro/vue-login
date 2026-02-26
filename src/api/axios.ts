@@ -1,19 +1,18 @@
 import axios from "axios";
 
-// Create an Axios instance
-export const api = axios.create({
-//   baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:3000", 
-  baseURL: "https://dotnet-starter.onrender.com", 
-  headers: {
-    "Content-Type": "application/json",
-  },
+const api = axios.create({
+  baseURL: "https://express-js-starter.onrender.com",
+  withCredentials: true,
 });
 
-// Optional: add interceptors
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
 
-// api.interceptors.response.use(
-//   (response) => response,
-//   (error) => {
-//     return Promise.reject(error);
-//   }
-// );
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
+export default api;

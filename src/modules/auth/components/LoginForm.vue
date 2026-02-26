@@ -5,8 +5,6 @@ import { z } from "zod";
 import { useAuth } from "@/modules/auth/composables/useAuth";
 
 const router = useRouter();
-const { login } = useAuth();
-
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
@@ -18,7 +16,7 @@ const form = ref({
 });
 
 const errors = ref<Record<string, string>>({});
-const loading = ref(false);
+const { login, loading } = useAuth();
 const message = ref<string | null>(null);
 
 const handleSubmit = async () => {
@@ -35,16 +33,13 @@ const handleSubmit = async () => {
   }
 
   errors.value = {};
-  loading.value = true;
   message.value = null;
 
   try {
     await login(form.value.email, form.value.password);
     router.push("/home");
   } catch (error: any) {
-    message.value = error.message || "Invalid email or password";
-  } finally {
-    loading.value = false;
+    message.value = error.message;
   }
 };
 </script>

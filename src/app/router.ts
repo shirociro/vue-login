@@ -1,21 +1,19 @@
 import { createRouter, createWebHistory } from "vue-router";
 import AuthLayout from "@/layouts/AuthLayout.vue";
 
-// Lazy-load modules
-const Auth = () => import("@/modules/auth/index.vue");
+const AuthPage = () => import("@/modules/auth/index.vue");
 
 const routes = [
-  { path: "/", 
-    component: Auth,
-    meta: { layout: AuthLayout }, 
-    
-    redirect: "/auth" },
   {
-    path: "/auth",
-    component: Auth,
-    meta: { layout: AuthLayout }, // Passing the component directly
+    path: "/",
+    redirect: "/login",
   },
- 
+  {
+    path: "/login",
+    name: "Auth",
+    component: AuthPage,
+    meta: { layout: AuthLayout },
+  },
 ];
 
 const router = createRouter({
