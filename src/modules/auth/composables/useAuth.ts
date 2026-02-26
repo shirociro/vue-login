@@ -19,34 +19,35 @@ export const useAuth = () => {
     return params.get("state");
   };
 
-  const login = async (email: string, password: string) => {
-    try {
-      const response = await loginRequest(email, password);
+const login = async (email: string, password: string) => {
+  try {
+    const response = await loginRequest(email, password);
 
-      console.log("Login response:", response);
-      const { accessToken, refreshToken } = response.data;
+    console.log("Login response:", response);
 
+    // Backend returns { data: { accessToken, refreshToken, user } }
+    const { accessToken, refreshToken } = response.data;
 
-      if (!accessToken) throw new Error("Access token missing");
+    if (!accessToken) throw new Error("Access token missing");
 
-      // Optionally store in sessionStorage for this page
-      sessionStorage.setItem("accessToken", accessToken);
-      sessionStorage.setItem("refreshToken", refreshToken);
+    // Optional: store temporarily if you need before redirect
+    // sessionStorage.setItem("accessToken", accessToken);
+    // sessionStorage.setItem("refreshToken", refreshToken);
 
-      // Redirect with token & state
-      const redirectUri = getRedirectUri();
-      const state = getState();
-      const url = new URL(redirectUri);
-      url.searchParams.set("token", accessToken);
-      if (state) url.searchParams.set("state", state);
+    // Prepare redirect to the task manager
+    const redirectUri = getRedirectUri();
+    const state = getState();
+    const url = new URL(redirectUri);
+    url.searchParams.set("token", accessToken);
+    if (state) url.searchParams.set("state", state);
 
-      window.location.href = url.toString();
-    } catch (err: any) {
-      console.error("Login failed", err);
-      alert("Login failed: " + (err?.message || "Unknown error"));
-    }
-  };
-
+    // Redirect SSO-style
+    window.location.href = url.toString();
+  } catch (err: any) {
+    console.error("Login failed", err);
+    alert("Login failed: " + (err?.message || "Unknown error"));
+  }
+};
   // Wrap store register with redirect
   const register = async (email: string, password: string) => {
     try {
