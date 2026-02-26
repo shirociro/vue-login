@@ -14,36 +14,54 @@ export const useAuth = () => {
     return redirectUri;
   };
 
-  // Optional: get state param for CSRF verification
-  // const getState = (): string | null => {
-  //   const params = new URLSearchParams(window.location.search);
-  //   return params.get("state");
-  // };
+  // Helper: get state param
+  const getState = (): string | null => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("state");
+  };
+
 
   // Wrap store login with redirect
   const login = async (email: string, password: string) => {
-    await store.login(email, password);
+    try {
+      const response = await store.login(email, password);
+      const { accessToken } = response.data;
 
-    const redirectUri = getRedirectUri();
-    // const state = getState();
+      // Only append token to redirect URL
+      const redirectUri = getRedirectUri();
+      const state = getState();
 
-    // Optionally, verify state here if you stored it previously
-    // if (!isValidState(state)) return alert("Invalid login attempt");
+      const url = new URL(redirectUri);
+      url.searchParams.set("token", accessToken);
+      if (state) url.searchParams.set("state", state);
 
-    window.location.href = redirectUri;
+      window.location.href = url.toString();
+    } catch (err) {
+      console.error("Login failed", err);
+      alert("Login failed: " + err.response?.data?.message || err.message);
+    }
   };
 
-  // Wrap store register with optional redirect
-  const register = async (email: string, password: string) => {
-    await store.register(email, password);
+   const register = async (email: string, password: string) => {
+    try {
+      const response = await store.register(email, password);
 
-    const redirectUri = getRedirectUri();
-    const state = getState();
+      const { accessToken, refreshToken } = response.data;
+      sessionStorage.setItem("accessToken", accessToken);
+      sessionStorage.setItem("refreshToken", refreshToken);
 
-    // Optionally, verify state here if you stored it previously
-    // if (!isValidState(state)) return alert("Invalid registration attempt");
+      const redirectUri = getRedirectUri();
+      const state = getState();
 
-    window.location.href = redirectUri;
+      const url = new URL(redirectUri);
+      url.searchParams.set("token", accessToken);
+      if (state) url.searchParams.set("state", state);
+
+      window.location.href = url.toString();
+    } catch (err) {
+      console.error("Register failed", err);
+      alert("Register failed: " + err.response?.data?.message || err.message);
+    }
   };
 
   const logout = () => {
