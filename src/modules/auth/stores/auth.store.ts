@@ -25,19 +25,30 @@ export const useAuthStore = defineStore("auth", {
 
         const response = await loginRequest(email, password);
 
-        // backend structure:
-        // response.data.accessToken
-        const accessToken = response.data.accessToken;
-        const user = response.data.user;
+        // Based on your backend structure:
+        // {
+        //   ok: true,
+        //   message: "...",
+        //   data: { accessToken, refreshToken, user }
+        // }
+
+        const accessToken = response.data.data.accessToken;
+        const user = response.data.data.user;
+
+        if (!accessToken) {
+          throw new Error("Access token missing in response");
+        }
 
         this.token = accessToken;
         this.user = user;
 
         localStorage.setItem("token", accessToken);
 
-        return response; // VERY IMPORTANT for useAuth
+        return response; // important for useAuth
       } catch (error: any) {
-        throw new Error(error.response?.data?.message || "Login failed");
+        throw new Error(
+          error.response?.data?.message || "Login failed"
+        );
       } finally {
         this.loading = false;
       }
@@ -47,11 +58,13 @@ export const useAuthStore = defineStore("auth", {
       try {
         this.loading = true;
 
-        const data = await registerRequest(email, password);
+        const response = await registerRequest(email, password);
 
-        return data; // return response if needed
+        return response;
       } catch (error: any) {
-        throw new Error(error.response?.data?.message || "Registration failed");
+        throw new Error(
+          error.response?.data?.message || "Registration failed"
+        );
       } finally {
         this.loading = false;
       }
