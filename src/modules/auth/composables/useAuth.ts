@@ -1,11 +1,11 @@
 import { useAuthStore } from "../stores/auth.store";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
-
+import { loginRequest } from "../services/auth.service";
 export const useAuth = () => {
   const store = useAuthStore();
   const router = useRouter();
-  const { loading, isAuthenticated } = storeToRefs(store);
+  // const { loading, isAuthenticated } = storeToRefs(store);
 
   // Helper: get redirect_uri from query params
   const getRedirectUri = (): string => {
@@ -19,35 +19,31 @@ export const useAuth = () => {
     return params.get("state");
   };
 
-  // Wrap store login with redirect
   const login = async (email: string, password: string) => {
     try {
-      const response = await store.login(email, password);
+      const response = await loginRequest(email, password);
 
-      // Always use the backend data structure
-      const accessToken = response.data.data.accessToken;
-      const refreshToken = response.data.data.refreshToken;
+      console.log("Login response:", response);
+      const { accessToken, refreshToken } = response.data;
 
-      if (!accessToken) {
-        throw new Error("Access token missing in response");
-      }
 
-      // Optionally store tokens in sessionStorage for later API calls
+      if (!accessToken) throw new Error("Access token missing");
+
+      // Optionally store in sessionStorage for this page
       sessionStorage.setItem("accessToken", accessToken);
       sessionStorage.setItem("refreshToken", refreshToken);
 
-      // Prepare redirect
+      // Redirect with token & state
       const redirectUri = getRedirectUri();
       const state = getState();
       const url = new URL(redirectUri);
       url.searchParams.set("token", accessToken);
       if (state) url.searchParams.set("state", state);
 
-      // Redirect to the target frontend
       window.location.href = url.toString();
     } catch (err: any) {
       console.error("Login failed", err);
-      alert("Login failed: " + (err?.response?.data?.message || err?.message || "Unknown error"));
+      alert("Login failed: " + (err?.message || "Unknown error"));
     }
   };
 
@@ -56,10 +52,11 @@ export const useAuth = () => {
     try {
       const response = await store.register(email, password);
 
+        
       // Extract tokens just like login
       const accessToken = response.data.data.accessToken;
       const refreshToken = response.data.data.refreshToken;
-
+      
       if (!accessToken) {
         throw new Error("Access token not found after register");
       }
@@ -80,16 +77,16 @@ export const useAuth = () => {
     }
   };
 
-  const logout = () => {
-    store.logout();
-    router.push("/login"); // redirect after logout
-  };
+  // const logout = () => {
+  //   store.logout();
+  //   router.push("/login"); // redirect after logout
+  // };
 
   return {
     login,
-    logout,
+    // logout,
     register,
-    loading,
-    isAuthenticated,
+    // loading,
+    // isAuthenticated,
   };
 };

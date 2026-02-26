@@ -16,7 +16,7 @@ const form = ref({
 });
 
 const errors = ref<Record<string, string>>({});
-const { login, loading } = useAuth();
+const { login, register} = useAuth();
 const message = ref<string | null>(null);
 
 const handleSubmit = async () => {
@@ -37,7 +37,7 @@ const handleSubmit = async () => {
 
   try {
     await login(form.value.email, form.value.password);
-    router.push("/home");
+    // router.push("/home");
   } catch (error: any) {
     message.value = error.message;
   }
