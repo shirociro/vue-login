@@ -25,7 +25,9 @@ export const useAuth = () => {
   const login = async (email: string, password: string) => {
     try {
       const response = await store.login(email, password);
-      const { accessToken } = response.data;
+      // const { accessToken } = response.data;
+      const { accessToken, refreshToken } = response.data;
+
 
       // Only append token to redirect URL
       const redirectUri = getRedirectUri();
