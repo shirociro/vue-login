@@ -14,7 +14,7 @@ export const useAuth = () => {
     return redirectUri;
   };
 
-  // // Optional: get state param for CSRF verification
+  // Optional: get state param for CSRF verification
   // const getState = (): string | null => {
   //   const params = new URLSearchParams(window.location.search);
   //   return params.get("state");
@@ -25,7 +25,7 @@ export const useAuth = () => {
     await store.login(email, password);
 
     const redirectUri = getRedirectUri();
-    const state = getState();
+    // const state = getState();
 
     // Optionally, verify state here if you stored it previously
     // if (!isValidState(state)) return alert("Invalid login attempt");
@@ -38,7 +38,7 @@ export const useAuth = () => {
     await store.register(email, password);
 
     const redirectUri = getRedirectUri();
-    // const state = getState();
+    const state = getState();
 
     // Optionally, verify state here if you stored it previously
     // if (!isValidState(state)) return alert("Invalid registration attempt");
