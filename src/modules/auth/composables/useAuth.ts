@@ -19,37 +19,35 @@ export const useAuth = () => {
     return params.get("state");
   };
 
-const login = async (email: string, password: string) => {
-  try {
-    const response = await store.login(email, password);
+  const login = async (email: string, password: string) => {
+    try {
+      const response = await store.login(email, password);
 
-    // Your backend structure:
-    // response.data.data.accessToken
-    const accessToken = response.data.data.accessToken;
+      // Your backend structure:
+      // response.data.data.accessToken
+      const accessToken = response.data.data.accessToken;
 
-    if (!accessToken) {
-      throw new Error("Access token missing in response");
+      if (!accessToken) {
+        throw new Error("Access token missing in response");
+      }
+
+      const redirectUri = getRedirectUri();
+      const state = getState();
+
+      const url = new URL(redirectUri);
+      url.searchParams.set("token", accessToken);
+      if (state) url.searchParams.set("state", state);
+
+      window.location.href = url.toString();
+    } catch (err: any) {
+      console.error("Login failed", err);
+
+      const msg =
+        err?.response?.data?.message || err?.message || "Unknown error";
+
+      alert("Login failed: " + msg);
     }
-
-    const redirectUri = getRedirectUri();
-    const state = getState();
-
-    const url = new URL(redirectUri);
-    url.searchParams.set("token", accessToken);
-    if (state) url.searchParams.set("state", state);
-
-    window.location.href = url.toString();
-  } catch (err: any) {
-    console.error("Login failed", err);
-
-    const msg =
-      err?.response?.data?.message ||
-      err?.message ||
-      "Unknown error";
-
-    alert("Login failed: " + msg);
-  }
-};
+  };
 
   const register = async (email: string, password: string) => {
     try {

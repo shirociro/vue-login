@@ -23,16 +23,21 @@ export const useAuthStore = defineStore("auth", {
       try {
         this.loading = true;
 
-        const data = await loginRequest(email, password);
+        const response = await loginRequest(email, password);
 
-        this.token = data.token;
-        this.user = data.user;
+        // backend structure:
+        // response.data.accessToken
+        const accessToken = response.data.accessToken;
+        const user = response.data.user;
 
-        localStorage.setItem("token", data.token);
+        this.token = accessToken;
+        this.user = user;
+
+        localStorage.setItem("token", accessToken);
+
+        return response; // VERY IMPORTANT for useAuth
       } catch (error: any) {
-        throw new Error(
-          error.response?.data?.message || "Login failed"
-        );
+        throw new Error(error.response?.data?.message || "Login failed");
       } finally {
         this.loading = false;
       }
@@ -46,9 +51,7 @@ export const useAuthStore = defineStore("auth", {
 
         return data; // return response if needed
       } catch (error: any) {
-        throw new Error(
-          error.response?.data?.message || "Registration failed"
-        );
+        throw new Error(error.response?.data?.message || "Registration failed");
       } finally {
         this.loading = false;
       }

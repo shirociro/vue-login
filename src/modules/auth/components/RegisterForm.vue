@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
-import { z } from 'zod';
-import { useAuth } from '@/modules/auth/composables/useAuth';
+import { ref, reactive } from "vue";
+import { z } from "zod";
+import { useAuth } from "@/modules/auth/composables/useAuth";
 
 const props = defineProps<{
   onSubmit?: (email: string, password: string) => void;
@@ -11,9 +11,9 @@ const { register } = useAuth();
 
 // --- State ---
 const form = reactive({
-  email: '',
-  password: '',
-  confirmPassword: '',
+  email: "",
+  password: "",
+  confirmPassword: "",
 });
 
 const errors = ref<Record<string, string>>({});
@@ -65,8 +65,8 @@ const handleSubmit = async () => {
 
 <template>
   <div class="animate-fade-in p-4">
-    <fwb-alert 
-      v-if="message" 
+    <fwb-alert
+      v-if="message"
       :type="message.includes('successfully') ? 'success' : 'danger'"
       class="mb-4"
     >
@@ -125,11 +125,7 @@ const handleSubmit = async () => {
         </fwb-input>
       </div>
 
-      <fwb-button
-        type="submit"
-        class="w-full !rounded-xl"
-        :disabled="loading"
-      >
+      <fwb-button type="submit" class="w-full !rounded-xl" :disabled="loading">
         {{ loading ? "Creating account..." : "Register" }}
       </fwb-button>
     </form>

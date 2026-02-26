@@ -46,8 +46,8 @@ const handleSubmit = async () => {
 
 <template>
   <div class="animate-fade-in p-4 w-full max-w-sm mx-auto">
-    <fwb-alert 
-      v-if="message" 
+    <fwb-alert
+      v-if="message"
       :type="message.includes('successfully') ? 'success' : 'danger'"
       class="mb-4"
     >
@@ -91,11 +91,7 @@ const handleSubmit = async () => {
         </fwb-input>
       </div>
 
-      <fwb-button
-        type="submit"
-        class="w-full !rounded-xl"
-        :disabled="loading"
-      >
+      <fwb-button type="submit" class="w-full !rounded-xl" :disabled="loading">
         {{ loading ? "Signing in..." : "Sign in" }}
       </fwb-button>
     </form>
