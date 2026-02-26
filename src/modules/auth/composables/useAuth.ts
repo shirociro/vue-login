@@ -7,29 +7,30 @@ export const useAuth = () => {
   const router = useRouter();
   const { loading, isAuthenticated } = storeToRefs(store);
 
-  // Helper: get redirect_uri from query params
+  // Get redirect_uri from query params
   const getRedirectUri = (): string => {
     const params = new URLSearchParams(window.location.search);
-    const redirectUri = params.get("redirect_uri") || "/tasks"; // default page
-    return redirectUri;
+    return params.get("redirect_uri") || "/tasks";
   };
 
-  // Helper: get state param
+  // Get state param
   const getState = (): string | null => {
     const params = new URLSearchParams(window.location.search);
     return params.get("state");
   };
 
-
-  // Wrap store login with redirect
   const login = async (email: string, password: string) => {
     try {
-      const response = await store.login(email, password);
-      // const { accessToken } = response.data;
-      const { accessToken, refreshToken } = response.data;
+      // Just call store login (do NOT expect response)
+      await store.login(email, password);
 
+      // Read token from storage (since store was already handling it before)
+      const accessToken = sessionStorage.getItem("accessToken");
 
-      // Only append token to redirect URL
+      if (!accessToken) {
+        throw new Error("Access token not found after login");
+      }
+
       const redirectUri = getRedirectUri();
       const state = getState();
 
@@ -38,19 +39,21 @@ export const useAuth = () => {
       if (state) url.searchParams.set("state", state);
 
       window.location.href = url.toString();
-    } catch (err) {
+    } catch (err: any) {
       console.error("Login failed", err);
-      alert("Login failed: " + err.response?.data?.message || err.message);
+      alert("Login failed: " + (err?.message || "Unknown error"));
     }
   };
 
-   const register = async (email: string, password: string) => {
+  const register = async (email: string, password: string) => {
     try {
-      const response = await store.register(email, password);
+      await store.register(email, password);
 
-      const { accessToken, refreshToken } = response.data;
-      sessionStorage.setItem("accessToken", accessToken);
-      sessionStorage.setItem("refreshToken", refreshToken);
+      const accessToken = sessionStorage.getItem("accessToken");
+
+      if (!accessToken) {
+        throw new Error("Access token not found after register");
+      }
 
       const redirectUri = getRedirectUri();
       const state = getState();
@@ -60,15 +63,15 @@ export const useAuth = () => {
       if (state) url.searchParams.set("state", state);
 
       window.location.href = url.toString();
-    } catch (err) {
+    } catch (err: any) {
       console.error("Register failed", err);
-      alert("Register failed: " + err.response?.data?.message || err.message);
+      alert("Register failed: " + (err?.message || "Unknown error"));
     }
   };
 
   const logout = () => {
     store.logout();
-    router.push("/login"); // redirect after logout
+    router.push("/login");
   };
 
   return {
